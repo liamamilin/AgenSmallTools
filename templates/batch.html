@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>批处理</h2>
+
+<form method="post" action="/run_batch" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label class="form-label">选择 System Prompt:</label>
+    <select class="form-select" name="system_prompt" required>
+      {% for p in prompts %}
+      <option value="{{ p }}">{{ p }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">上传输入文件 (CSV, 两列: id, user_prompt):</label>
+    <input class="form-control" type="file" name="file" accept=".csv" required>
+  </div>
+  
+  <!-- <div class="mb-3">
+    <label class="form-label">输出路径:</label>
+    <input class="form-control" type="text" name="output_dir" placeholder="/Users/milin/outputs" required>
+  </div> -->
+  <div class="mb-3">
+    <label class="form-label">输出文件名:</label>
+    <input class="form-control" type="text" name="output_name" value="result.csv">
+  </div>
+
+  <button type="submit" class="btn btn-success">运行批处理</button>
+</form>
+
+{% if download %}
+<hr>
+<h4>批处理完成</h4>
+<p>结果文件已生成: <a class="btn btn-primary" href="{{ download }}">下载结果</a></p>
+{% endif %}
+{% endblock %}

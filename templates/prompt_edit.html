@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ mode }} Prompt</h2>
+
+<form method="post" action="/prompts/save">
+  <div class="mb-3">
+    <label class="form-label">文件名 (必须以 .yaml 结尾)</label>
+    <input class="form-control" type="text" name="filename" value="{{ filename }}" {% if mode == "编辑" %}readonly{% endif %} required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">内容 (YAML)</label>
+    <textarea class="form-control" name="content" rows="20" required>{{ content }}</textarea>
+  </div>
+
+  <button type="submit" class="btn btn-primary">保存</button>
+  <a href="/prompts" class="btn btn-secondary">取消</a>
+</form>
+{% endblock %}

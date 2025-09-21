@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Prompt 管理</h2>
+
+<a href="/prompts/new" class="btn btn-success mb-3">➕ 新建 Prompt</a>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>文件名</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in files %}
+    <tr>
+      <td>{{ f }}</td>
+      <td>
+        <a href="/prompts/edit/{{ f }}" class="btn btn-primary btn-sm">编辑</a>
+        <a href="/delete_prompt/{{ f }}" class="btn btn-danger btn-sm"
+           onclick="return confirm('确定要删除 {{ f }} 吗？');">删除</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="bi bi-chat-dots"></i>
+        单条对话
+    </h1>
+    <p class="page-subtitle">与AI Agent进行实时对话，体验智能交互</p>
+</div>
+
+<div class="form-section">
+    <h3 class="section-title">
+        <i class="bi bi-gear"></i>
+        对话设置
+    </h3>
+    
+    <form method="post" action="/run_single">
+        <div class="mb-4">
+            <label class="form-label fw-semibold">
+                <i class="bi bi-robot"></i>
+                选择 System Prompt:
+            </label>
+            <select class="form-select form-select-lg" name="system_prompt" required>
+                <option value="" disabled selected>请选择一个Agent类型...</option>
+                {% for p in prompts %}
+                <option value="{{ p }}">{{ p }}</option>
+                {% endfor %}
+            </select>
+            <div class="form-text">选择不同的Agent将使用不同的专业能力和对话风格</div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-semibold">
+                <i class="bi bi-chat-square-text"></i>
+                输入 User Prompt:
+            </label>
+            <textarea class="form-control" name="user_prompt" rows="6" required 
+                      placeholder="请输入您的问题或对话内容..."></textarea>
+            <div class="form-text">详细描述您的问题，AI将为您提供更准确的回答</div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-play-circle"></i>
+                开始对话
+            </button>
+        </div>
+    </form>
+</div>
+
+{% if result %}
+<div class="form-section">
+    <h3 class="section-title">
+        <i class="bi bi-check-circle-fill text-success"></i>
+        对话结果
+    </h3>
+    <div class="alert alert-success" style="white-space: pre-wrap; font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace; line-height: 1.6;">{{ result }}</div>
+    
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <small class="text-muted">
+            <i class="bi bi-clock"></i>
+            响应时间: 实时
+        </small>
+        <button class="btn btn-outline-secondary btn-sm" onclick="copyResult()">
+            <i class="bi bi-clipboard"></i>
+            复制结果
+        </button>
+    </div>
+</div>
+
+<script>
+function copyResult() {
+    const resultText = document.querySelector('.alert-success').textContent;
+    navigator.clipboard.writeText(resultText).then(() => {
+        // 创建临时提示
+        const btn = event.target.closest('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check"></i> 已复制';
+        btn.classList.remove('btn-outline-secondary');
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-secondary');
+        }, 2000);
+    });
+}
+</script>
+{% endif %}
+{% endblock %}

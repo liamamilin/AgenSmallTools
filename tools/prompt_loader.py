@@ -1,6 +1,9 @@
 import os
 import yaml
-
+from pathlib import Path
+import yaml
+BASE_DIR = Path(__file__).resolve().parents[1]
+PROMPTS_DIR = BASE_DIR / "prompts"
 PROMPT_DIR = os.path.join(os.path.dirname(__file__), "..", "prompts")
 
 # 缓存字典：name -> file_path
@@ -46,6 +49,42 @@ def load_system_prompt_from_name(target_name: str) -> str:
         f"样例:\n{system['examples']}\n\n"
         f"输出格式:\n{system['output_format']}"
     )
+def load_system_prompt_from_file(filename: str) -> str:
+    p = Path(filename)
+    if not p.is_absolute():
+        p = PROMPTS_DIR / filename
+    # 容错：允许 - 与 _ 互换 以及补 .yaml
+    cand = [
+        p,
+        p.with_suffix(".yaml"),
+        PROMPTS_DIR / filename.replace("-", "_"),
+        PROMPTS_DIR / filename.replace("_", "-"),
+        (PROMPTS_DIR / filename.replace("-", "_")).with_suffix(".yaml"),
+        (PROMPTS_DIR / filename.replace("_", "-")).with_suffix(".yaml"),
+    ]
+    target = next((c for c in cand if c.exists()), None)
+    if target is None:
+        raise FileNotFoundError(f"未找到文件 {p}")
+
+    with open(target, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+
+    system = data.get("system", "")
+    if isinstance(system, dict):
+        parts = [system.get("objective"), system.get("context"), system.get("role")]
+        system = "\n".join([str(x) for x in parts if x])
+    return str(system).strip()
+
+
+def find_yaml_by_name(target_name: str) -> Path:
+    norm = target_name.replace("-", "_")
+    for p in PROMPTS_DIR.glob("*.yaml"):
+        with open(p, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+        name = str(data.get("name", "")).strip()
+        if name.replace("-", "_") == norm:
+            return p
+    raise FileNotFoundError(f"未找到 name={target_name} 的 YAML 文件")
 
 if __name__ == "__main__":
     print("当前 PROMPT_DIR:", PROMPT_DIR)
