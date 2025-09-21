@@ -83,3 +83,52 @@ async def delete_prompt(filename: str):
     return RedirectResponse("/prompts", status_code=303)
 
 
+from fastapi import Form
+
+# 打开新建页面
+@app.get("/prompts/new", response_class=HTMLResponse)
+async def new_prompt_page(request: Request):
+    template = """name: new-agent
+description: 新建 Prompt 模版
+system:
+  objective: "说明任务目标"
+  context: "提供背景信息"
+  role: "角色描述"
+examples:
+  - 输入: "示例输入"
+    输出: "示例输出"
+output_format: "输出要求"
+"""
+    return templates.TemplateResponse("prompt_edit.html", {
+        "request": request,
+        "mode": "新建",
+        "filename": "new_prompt.yaml",
+        "content": template
+    })
+
+
+# 打开编辑页面
+@app.get("/prompts/edit/{filename}", response_class=HTMLResponse)
+async def edit_prompt_page(request: Request, filename: str):
+    file_path = PROMPTS_DIR / filename
+    if not file_path.exists():
+        return RedirectResponse("/prompts", status_code=303)
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    return templates.TemplateResponse("prompt_edit.html", {
+        "request": request,
+        "mode": "编辑",
+        "filename": filename,
+        "content": content
+    })
+
+
+# 保存（新建 / 编辑）
+@app.post("/prompts/save")
+async def save_prompt(filename: str = Form(...), content: str = Form(...)):
+    file_path = PROMPTS_DIR / filename
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    return RedirectResponse("/prompts", status_code=303)

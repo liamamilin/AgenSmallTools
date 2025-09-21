@@ -42,12 +42,14 @@ def load_system_prompt_from_name(target_name: str) -> str:
     with open(file_path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
     system = data["system"]
+    examples = system.get("examples", "（无示例）")
+    output_format = system.get("output_format", "（无）")
     return (
         f"任务目标:\n{system['objective']}\n\n"
         f"上下文:\n{system['context']}\n\n"
         f"角色:\n{system['role']}\n\n"
-        f"样例:\n{system['examples']}\n\n"
-        f"输出格式:\n{system['output_format']}"
+        f"样例:\n{examples}\n\n"
+        f"输出格式:\n{output_format}"
     )
 def load_system_prompt_from_file(filename: str) -> str:
     p = Path(filename)
