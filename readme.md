@@ -1,8 +1,4 @@
-太好了 👍 采用 **固定 `outputs/` 目录** + **下载按钮** 的方案会简单很多，也避免浏览器路径权限问题。
 
-下面我给你写一个 **项目 README.md**，清晰地告诉使用者如何安装、运行和使用。
-
----
 
 # 📘 Agent 客户端项目
 
@@ -120,8 +116,4 @@ uvicorn main:app --reload
 * [ ] 支持多模型切换（如 OpenAI / 本地模型）
 * [ ] Prompt 分类和搜索功能
 
----
-
-👉 建议：我可以帮你生成一个 `requirements.txt`，这样你下次直接 `pip install -r requirements.txt` 就能一键安装。
-
-要不要我帮你写一个 **requirements.txt**？
+ 
